@@ -1,0 +1,19 @@
+include_guard(GLOBAL)
+
+include("${CMAKE_CURRENT_LIST_DIR}/ArmNoneEabi-header.cmake")
+
+# NOTE: we only check the C compiler, since CMake deduces the others
+# automatically from it (respecting the order in the project call).
+
+if (NOT DEFINED CMAKE_C_COMPILER AND NOT DEFINED ENV{CC})
+    message(FATAL_ERROR "CC environment variable must be set")
+endif ()
+
+set(CMAKE_C_COMPILER_TARGET ${ARM_TARGET_TRIPLE})
+set(CMAKE_CXX_COMPILER_TARGET ${ARM_TARGET_TRIPLE})
+set(CMAKE_ASM_COMPILER_TARGET ${ARM_TARGET_TRIPLE})
+
+set(_EXE_LINKER_FLAGS
+    "-Wl,--start-group -ldummyhost -lclang_rt.builtins -Wl,--end-group")
+
+include("${CMAKE_CURRENT_LIST_DIR}/ArmNoneEabi.cmake")

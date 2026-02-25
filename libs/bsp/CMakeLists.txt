@@ -1,0 +1,6 @@
+add_subdirectory(bspCharInputOutput)
+add_subdirectory(bspDynamicClient)
+add_subdirectory(bspInputManager)
+add_subdirectory(bspInterrupts)
+add_subdirectory(bspOutputManager)
+add_subdirectory(bspOutputPwm)

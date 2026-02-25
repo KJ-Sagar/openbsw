@@ -1,0 +1,8 @@
+tool:
+  gcc_version: "11.x"
+  cmake_version: "3.28"
+  ubuntu_version: "22.04"
+  wsl_kernel_version: "5.10.60.1"
+  s32ds_arm_version: "2.2"
+  gcc-arm-none-eabi: "14.3.rel1"
+  llvm-arm: "19.1.1"

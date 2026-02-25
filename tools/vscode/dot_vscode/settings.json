@@ -1,0 +1,6 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/executables/referenceApp",
+    "cmake.options.statusBarVisibility": "visible",
+    "cortex-debug.liveWatchRefreshRate": 500,
+    "cortex-debug.armToolchainPath": "/home/username/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi/bin/"
+}

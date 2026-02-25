@@ -1,0 +1,310 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 28,
+        "patch": 3
+    },
+    "include": [
+        "cmake/presets/config-base.json"
+    ],
+    "configurePresets": [
+        {
+            "name": "tests-posix-debug",
+            "displayName": "Configure for testing POSIX and generic modules (debug)",
+            "description": "Configure for testing POSIX and generic modules (debug)",
+            "inherits": "_config-base",
+            "binaryDir": "${sourceDir}/build/tests/posix/Debug",
+            "cacheVariables": {
+                "CMAKE_DEFAULT_BUILD_TYPE": "Debug",
+                "CMAKE_CONFIGURATION_TYPES": "Debug",
+                "BUILD_EXECUTABLE": "unitTest",
+                "OPENBSW_PLATFORM": "posix"
+            }
+        },
+        {
+            "name": "tests-posix-release",
+            "displayName": "Configure for testing POSIX and generic modules (release)",
+            "description": "Configure for testing POSIX and generic modules (release)",
+            "inherits": "_config-base",
+            "binaryDir": "${sourceDir}/build/tests/posix/Release",
+            "cacheVariables": {
+                "CMAKE_DEFAULT_BUILD_TYPE": "Release",
+                "CMAKE_CONFIGURATION_TYPES": "Release",
+                "BUILD_EXECUTABLE": "unitTest",
+                "OPENBSW_PLATFORM": "posix"
+            }
+        },
+        {
+            "name": "tests-s32k1xx-debug",
+            "displayName": "Configure for testing S32K1XX modules (debug)",
+            "description": "Configure for testing S32K1XX modules (debug)",
+            "inherits": "_config-base",
+            "binaryDir": "${sourceDir}/build/tests/s32k1xx/Debug",
+            "cacheVariables": {
+                "CMAKE_DEFAULT_BUILD_TYPE": "Debug",
+                "CMAKE_CONFIGURATION_TYPES": "Debug",
+                "BUILD_EXECUTABLE": "unitTest",
+                "OPENBSW_PLATFORM": "s32k1xx"
+            }
+        },
+        {
+            "name": "tests-s32k1xx-release",
+            "displayName": "Configure for testing S32K1XX modules (release)",
+            "description": "Configure for testing S32K1XX modules (release)",
+            "inherits": "_config-base",
+            "binaryDir": "${sourceDir}/build/tests/s32k1xx/Release",
+            "cacheVariables": {
+                "CMAKE_DEFAULT_BUILD_TYPE": "Release",
+                "CMAKE_CONFIGURATION_TYPES": "Release",
+                "BUILD_EXECUTABLE": "unitTest",
+                "OPENBSW_PLATFORM": "s32k1xx"
+            }
+        },
+        {
+            "name": "posix-freertos",
+            "displayName": "POSIX-FREERTOS compliant configuration",
+            "description": "Configure for POSIX-compliant environment",
+            "inherits": "_config-base",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "BUILD_EXECUTABLE": "referenceApp",
+                "BUILD_TARGET_PLATFORM": "POSIX",
+                "BUILD_TARGET_RTOS": "FREERTOS"
+            }
+        },
+        {
+            "name": "posix-threadx",
+            "displayName": "POSIX-THREADX compliant configuration",
+            "description": "Configure for POSIX-compliant environment",
+            "inherits": "_config-base",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "BUILD_EXECUTABLE": "referenceApp",
+                "BUILD_TARGET_PLATFORM": "POSIX",
+                "BUILD_TARGET_RTOS": "THREADX"
+            }
+        },
+        {
+            "name": "posix-rust",
+            "displayName": "POSIX with Rust configuration and FreeRTOS",
+            "description": "Configure for POSIX-compliant environment with Rust support enabled, gcc and FreeRTOS",
+            "inherits": "_config-base",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "BUILD_EXECUTABLE": "referenceApp",
+                "BUILD_RUST": "ON",
+                "BUILD_TARGET_PLATFORM": "POSIX",
+                "BUILD_TARGET_RTOS": "FREERTOS"
+            }
+        },
+        {
+            "name": "s32k148-rust-gcc",
+            "generator": "Ninja Multi-Config",
+            "displayName": "S32K148 with Rust configuration and FreeRTOS",
+            "description": "Configure for S32K148 platform with Rust support enabled, gcc and FreeRTOS",
+            "inherits": "_config-base",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/ArmNoneEabi-gcc.cmake",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "BUILD_EXECUTABLE": "referenceApp",
+                "BUILD_RUST": "ON",
+                "BUILD_TARGET_PLATFORM": "S32K148EVB",
+                "BUILD_TARGET_RTOS": "FREERTOS",
+                "CMAKE_ASM_FLAGS_RELWITHDEBINFO": "-g3",
+                "CMAKE_CONFIGURATION_TYPES": "RelWithDebInfo;Debug;Release",
+                "CMAKE_C_FLAGS_RELWITHDEBINFO": "-g3 -O2 -DNDEBUG",
+                "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-g3 -O2 -DNDEBUG",
+                "CMAKE_DEFAULT_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "s32k148-freertos-gcc",
+            "generator": "Ninja Multi-Config",
+            "displayName": "S32K148 FreeRTOS configuration (GCC)",
+            "description": "Configure for S32K148 platform using ARM GCC toolchain",
+            "inherits": "_config-base",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/ArmNoneEabi-gcc.cmake",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "BUILD_EXECUTABLE": "referenceApp",
+                "BUILD_TARGET_PLATFORM": "S32K148EVB",
+                "BUILD_TARGET_RTOS": "FREERTOS",
+                "CMAKE_ASM_FLAGS_RELWITHDEBINFO": "-g3",
+                "CMAKE_CONFIGURATION_TYPES": "RelWithDebInfo;Debug;Release",
+                "CMAKE_C_FLAGS_RELWITHDEBINFO": "-g3 -O2 -DNDEBUG",
+                "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-g3 -O2 -DNDEBUG",
+                "CMAKE_DEFAULT_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "s32k148-threadx-gcc",
+            "generator": "Ninja Multi-Config",
+            "displayName": "S32K148 ThreadX configuration (GCC)",
+            "description": "Configure for S32K148 platform using ARM GCC toolchain",
+            "inherits": "_config-base",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/ArmNoneEabi-gcc.cmake",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "BUILD_EXECUTABLE": "referenceApp",
+                "BUILD_TARGET_PLATFORM": "S32K148EVB",
+                "BUILD_TARGET_RTOS": "THREADX",
+                "CMAKE_ASM_FLAGS_RELWITHDEBINFO": "-g3",
+                "CMAKE_CONFIGURATION_TYPES": "RelWithDebInfo;Debug;Release",
+                "CMAKE_C_FLAGS_RELWITHDEBINFO": "-g3 -O2 -DNDEBUG",
+                "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-g3 -O2 -DNDEBUG",
+                "CMAKE_DEFAULT_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "s32k148-freertos-clang",
+            "generator": "Ninja Multi-Config",
+            "displayName": "S32K148 FreeRTOS configuration (Clang)",
+            "description": "Configure for S32K148 platform using ARM Clang toolchain",
+            "inherits": "_config-base",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/ArmNoneEabi-clang.cmake",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "BUILD_EXECUTABLE": "referenceApp",
+                "BUILD_TARGET_PLATFORM": "S32K148EVB",
+                "BUILD_TARGET_RTOS": "FREERTOS",
+                "CMAKE_ASM_FLAGS_RELWITHDEBINFO": "-g3",
+                "CMAKE_CONFIGURATION_TYPES": "RelWithDebInfo;Debug;Release",
+                "CMAKE_C_FLAGS_RELEASE": "-Os -DNDEBUG",
+                "CMAKE_CXX_FLAGS_RELEASE": "-Os -DNDEBUG",
+                "CMAKE_C_FLAGS_RELWITHDEBINFO": "-g3 -Os -DNDEBUG",
+                "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-g3 -Os -DNDEBUG",
+                "CMAKE_DEFAULT_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "s32k148-threadx-clang",
+            "generator": "Ninja Multi-Config",
+            "displayName": "S32K148 ThreadX configuration (Clang)",
+            "description": "Configure for S32K148 platform using ARM Clang toolchain",
+            "inherits": "_config-base",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/ArmNoneEabi-clang.cmake",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "BUILD_EXECUTABLE": "referenceApp",
+                "BUILD_TARGET_PLATFORM": "S32K148EVB",
+                "BUILD_TARGET_RTOS": "THREADX",
+                "CMAKE_ASM_FLAGS_RELWITHDEBINFO": "-g3",
+                "CMAKE_CONFIGURATION_TYPES": "RelWithDebInfo;Debug;Release",
+                "CMAKE_C_FLAGS_RELEASE": "-Os -DNDEBUG",
+                "CMAKE_CXX_FLAGS_RELEASE": "-Os -DNDEBUG",
+                "CMAKE_C_FLAGS_RELWITHDEBINFO": "-g3 -Os -DNDEBUG",
+                "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-g3 -Os -DNDEBUG",
+                "CMAKE_DEFAULT_BUILD_TYPE": "RelWithDebInfo"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "tests-posix-debug",
+            "displayName": "Build tests of POSIX and generic modules (debug)",
+            "description": "Build tests of POSIX and generic modules (debug)",
+            "configurePreset": "tests-posix-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "tests-posix-release",
+            "displayName": "Build tests of POSIX and generic modules (release)",
+            "description": "Build tests of POSIX and generic modules (release)",
+            "configurePreset": "tests-posix-release",
+            "configuration": "Release"
+        },
+        {
+            "name": "tests-s32k1xx-debug",
+            "displayName": "Build tests of S32K1XX modules (debug)",
+            "description": "Build tests of S32K1XX modules (debug)",
+            "configurePreset": "tests-s32k1xx-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "tests-s32k1xx-release",
+            "displayName": "Build tests of S32K1XX modules (release)",
+            "description": "Build tests of S32K1XX modules (release)",
+            "configurePreset": "tests-s32k1xx-release",
+            "configuration": "Release"
+        },
+        {
+            "name": "posix-freertos",
+            "displayName": "build POSIX-FREERTOS",
+            "description": "Build reference application for POSIX-compliant environment (Release by default; for Debug use --config Debug)",
+            "configurePreset": "posix-freertos"
+        },
+        {
+            "name": "posix-threadx",
+            "displayName": "build POSIX-THREADX",
+            "description": "Build reference application for POSIX-compliant environment (Release by default; for Debug use --config Debug)",
+            "configurePreset": "posix-threadx"
+        },
+        {
+            "name": "posix-rust",
+            "displayName": "build POSIX with Rust build and FreeRTOS",
+            "description": "Build reference application for POSIX-compliant environment with Rust support, gcc and FreeRTOS (Release by default; for Debug use --config Debug)",
+            "configurePreset": "posix-rust"
+        },
+        {
+            "name": "s32k148-rust-gcc",
+            "displayName": "S32K148 with Rust build and FreeRTOS",
+            "description": "Build reference application for S32K148 platform with Rust support, gcc and FreeRTOS",
+            "configurePreset": "s32k148-rust-gcc"
+        },
+        {
+            "name": "s32k148-freertos-gcc",
+            "displayName": "S32K148 FreeRTOS build (GCC)",
+            "description": "Build reference application for S32K148 platform with Clang (Release by default; for Debug use --config Debug)",
+            "configurePreset": "s32k148-freertos-gcc"
+        },
+        {
+            "name": "s32k148-threadx-gcc",
+            "displayName": "S32K148 ThreadX build (GCC)",
+            "description": "Build reference application for S32K148 platform with Clang (Release by default; for Debug use --config Debug)",
+            "configurePreset": "s32k148-threadx-gcc"
+        },
+        {
+            "name": "s32k148-freertos-clang",
+            "displayName": "S32K148 FreeRTOS build (Clang)",
+            "description": "Build reference application for S32K148 platform with Clang (Release by default; for Debug use --config Debug)",
+            "configurePreset": "s32k148-freertos-clang"
+        },
+        {
+            "name": "s32k148-threadx-clang",
+            "displayName": "S32K148 ThreadX build (Clang)",
+            "description": "Build reference application for S32K148 platform with Clang (Release by default; for Debug use --config Debug)",
+            "configurePreset": "s32k148-threadx-clang"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "tests-posix-debug",
+            "displayName": "Run tests of POSIX and generic modules (debug)",
+            "description": "Run tests of POSIX and generic modules (debug)",
+            "configuration": "Debug",
+            "configurePreset": "tests-posix-debug"
+        },
+        {
+            "name": "tests-posix-release",
+            "displayName": "Run tests of POSIX and generic modules (release)",
+            "description": "Run tests of POSIX and generic modules (release)",
+            "configuration": "Release",
+            "configurePreset": "tests-posix-release"
+        },
+        {
+            "name": "tests-s32k1xx-debug",
+            "displayName": "Run tests of S32K1XX modules (debug)",
+            "description": "Run tests of S32K1XX modules (debug)",
+            "configuration": "Debug",
+            "configurePreset": "tests-s32k1xx-debug"
+        },
+        {
+            "name": "tests-s32k1xx-release",
+            "displayName": "Run tests of S32K1XX modules (release)",
+            "description": "Run tests of S32K1XX modules (release)",
+            "configuration": "Release",
+            "configurePreset": "tests-s32k1xx-release"
+        }
+    ]
+}

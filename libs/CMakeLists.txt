@@ -1,0 +1,6 @@
+add_subdirectory(3rdparty SYSTEM)
+if (INCLUDE_OPENBSW_LIBS_BSP)
+    add_subdirectory(bsp)
+endif ()
+add_subdirectory(bsw)
+add_subdirectory(safety)

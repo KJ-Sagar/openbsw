@@ -1,0 +1,45 @@
+[global]
+excludes = [
+  "**/3rdparty/*/**",
+  "**/Doxyfile",
+  "**/Makefile",
+  "*.*-format",
+  "*.S",
+  "*.cmm",
+  "*.css",
+  "*.dld",
+  "*.gdb",
+  "*.gif",
+  "*.gitignore",
+  "*.html",
+  "*.ini",
+  "*.josh",
+  "*.json",
+  "*.md",
+  "*.png",
+  "*.puml",
+  "*.py",
+  "*.rb",
+  "*.rst",
+  "*.s",
+  "*.sh",
+  "*.spec",
+  "*.toml",
+  "*.yaml",
+  "*.yml",
+  "LICENSE",
+  "admin/cmake/CodeCoverage.cmake",
+  "docker/**",
+  "tools/clang-format-wrapper",
+  "tools/puncover_tool/**",
+]
+
+[formatter.cpp]
+command = "tools/clang-format-wrapper"
+options = [ "--style=file", "-i" ]
+includes = [ "*.c", "*.cc", "*.cpp", "*.h", ".hh", "*.hpp" ]
+
+[formatter.cmake]
+command = "cmake-format"
+options = [ "-i" ]
+includes = [ "**/CMakeLists.txt", "*.cmake", "CMakeLists.txt" ]
