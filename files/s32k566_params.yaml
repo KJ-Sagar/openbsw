@@ -1,0 +1,73 @@
+# =============================================================================
+# FILE    : vdk/s32k566_params.yaml
+# PURPOSE : Synopsys Virtualizer platform configuration for the S32K566 VDK.
+#
+#           Pass this file to virtualizer_exec with --params s32k566_params.yaml
+#           Controls clocks, CAN bus mapping, UART console, and debug ports.
+# =============================================================================
+
+platform:
+  # ---------------------------------------------------------------------------
+  # Clock configuration
+  # FIRC  = 48 MHz  (internal fast RC — always on)
+  # FXOSC = 16 MHz  (external crystal — modelled as ideal oscillator)
+  # PLL   = 200 MHz (Cortex-M7 core clock)
+  # ---------------------------------------------------------------------------
+  clocks:
+    FIRC_frequency_Hz:  48000000
+    FXOSC_frequency_Hz: 16000000
+    PLL_frequency_Hz:   200000000
+    SPLLDIV2_freq_Hz:   80000000   # FlexCAN / LPUART peripheral clock
+
+  # ---------------------------------------------------------------------------
+  # CAN configuration
+  # Each FlexCAN instance can be mapped to a virtual bus TCP port.
+  # The Python stimulus script (can_stimulus.py) connects to virtual_bus_port.
+  # ---------------------------------------------------------------------------
+  can:
+    FlexCAN_0:
+      enable: true
+      virtual_bus_port: 9000     # TCP port for CAN bus exchange
+      loopback: false             # Set true for standalone self-test
+      baud_rate_kbps: 500        # Informational — driver configures register
+
+    FlexCAN_1:
+      enable: false
+
+    FlexCAN_2:
+      enable: false
+
+  # ---------------------------------------------------------------------------
+  # UART / Console
+  # LPUART_0 is mapped to a host TCP port.
+  # Connect with: nc localhost 3000
+  # ---------------------------------------------------------------------------
+  uart:
+    LPUART_0:
+      enable: true
+      host_port: 3000
+      baud_rate: 115200
+
+  # ---------------------------------------------------------------------------
+  # Memory — must match the linker script
+  # ---------------------------------------------------------------------------
+  memory:
+    MRAM_base_addr: 0x00400000
+    MRAM_size_MB: 4
+    SRAM_base_addr: 0x20000000
+    SRAM_size_KB: 1024
+
+  # ---------------------------------------------------------------------------
+  # Debug / GDB
+  # ---------------------------------------------------------------------------
+  debug:
+    gdb_port: 2345
+    halt_on_reset: true       # Halt CPU at Reset_Handler until GDB connects
+    semihosting: false        # Disable semihosting (we use UART instead)
+
+  # ---------------------------------------------------------------------------
+  # Trace (optional — requires Synopsys Virtualizer Pro licence)
+  # ---------------------------------------------------------------------------
+  trace:
+    enable: false
+    etb_size_KB: 64

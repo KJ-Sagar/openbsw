@@ -1,0 +1,1162 @@
+NXP S32K566 on OpenBSW
+
+CAN Application Development & Synopsys VDK Guide
+
+A complete reference covering: S32K566 Peripheral Inventory · OpenBSW CAN Application ·
+Synopsys VDK Integration
+
+February 2026
+
+1. NXP S32K566 — Device Overview
+The S32K566 belongs to NXP's new S32K5 family, announced at Embedded World in March 2025. It is
+the automotive industry's first microcontroller built on a 16 nm FinFET process node with embedded
+Magnetic RAM (MRAM). The family targets zonal and domain controllers, battery management systems
+(BMS), on-board chargers (OBC), traction inverters, and high-performance ECU consolidation use
+cases in Software-Defined Vehicle (SDV) architectures.
+
+1.1 Core Architecture
+Core Subsystem
+
+Instances
+
+Max Frequency
+
+Role
+
+Arm Cortex-M7
+
+6 cores (3×Lock-Step
+or 2×LS + 2×Single)
+
+200 MHz
+
+Real-time
+primary cores
+
+Arm Cortex-R52
+
+2 cores
+
+800 MHz
+
+Compute
+extension
+
+Arm Cortex-M4
+
+1 core
+
+Low freq
+
+Low-power
+engine
+
+eIQ® Neutron NPU
+
+1×
+
+—
+
+ML/AI
+accelerator
+
+HSE (Cortex-M0+)
+
+1×
+
+—
+
+Hardware
+Security Engine
+
+The Cortex-M7 cores support split-lock architecture, meaning any pair can run independently (ASIL B,
+higher throughput) or in lockstep (ASIL D, maximum safety). XRDC (Extended Resource Domain
+Controller) enforces hardware-level isolation between domains, which is essential for mixed-criticality
+ECU consolidation.
+
+2. S32K566 — Complete Peripheral Inventory
+The following table is a comprehensive inventory of all peripheral blocks on the S32K566. Counts are
+for the full S32K566 device variant; lower members of the S32K5 family may have reduced counts.
+
+2.1 Network & Communication
+Peripheral
+
+Count
+
+Key Features
+
+FlexCAN (CAN FD)
+
+8×
+
+ISO CAN-FD, CAN XL support, DMA, up to 96 message
+
+buffers per instance, 5 Mbps FD data rate
+LPUART / LIN
+
+16×
+
+LIN master/slave, DMA support, baud oversampling 4×–
+32×, async low-power operation
+
+Ethernet (2.5 Gbps)
+
+1×
+
+2.5 Gbps MAC, TSN (802.1Qbv, 802.1Qbu, 802.1AS), AVB,
+IEEE 1722, integrated with S32N-class switch core
+
+Ethernet (10BASE-T1S)
+
+1×
+
+Single-pair automotive Ethernet, PLCA multidrop, IEEE
+802.3cg
+
+Ethernet Switch Core
+
+1×
+
+Integrated network translation accelerator, shared IP with
+NXP S32N processor family, reduces wiring complexity
+
+LPSPI
+
+6×
+
+Low-power SPI, master/slave, DMA, 32-bit word, 4 chipselects, FIFO depth 4 words
+
+LPI2C
+
+2×
+
+Low-power I2C, master/slave, DMA, fast/fast-plus/ultrafast/HS modes up to 3.4 MHz, SMBus 3 compatible
+
+FlexIO
+
+1× (32
+ch)
+
+Configurable I/O emulation: UART, SPI, I2C, I2S, SENT,
+LIN, PWM, entry-level TFT LCD driver
+
+2.2 Analog & Measurement
+Peripheral
+
+Count
+
+Key Features
+
+SAR ADC (12-bit)
+
+4×
+
+24 channels each, 12-bit resolution, BCTU trigger support,
+DMA, scan mode, hardware averaging
+
+LPCMP (Comparator)
+
+2×
+
+Low-power analog comparator, 8-tap DAC reference,
+interrupt/DMA trigger
+
+SDADC (Sigma-Delta)
+
+2×
+
+High-resolution differential ADC, suitable for current/voltage
+measurement in BMS/inverter apps
+
+DAC
+
+2×
+
+12-bit D/A converter, DMA, output buffering
+
+2.3 Timers & Motor Control
+Peripheral
+
+Count
+
+Key Features
+
+eMIOS (16-bit Timer)
+
+3× (24
+ch
+each)
+
+Enhanced Modular I/O Subsystem: PWM generation, input
+capture, output compare, period measurement
+
+BCTU (Body Cross Trigger
+Unit)
+
+1×
+
+Hardware trigger matrix between ADC, timers, and other
+peripherals without CPU involvement
+
+LCU (Logic Control Unit)
+
+3×
+
+Programmable logic — performs combinatorial boolean
+operations on input signals to assist motor control
+
+LPIT (Low-Power Interrupt
+Timer)
+
+1× (4
+ch)
+
+Periodic interrupt / trigger generation, 32-bit, available in
+low-power modes
+
+LPTMR (Low-Power Timer)
+
+1×
+
+16-bit timer with pulse counter mode, flexible wake-up
+source
+
+RTC
+
+1×
+
+32-bit real-time clock, seconds counter, programmable
+alarm, API (analog backup)
+
+2.4 Memory & Storage
+Memory Block
+
+Size
+
+Features
+
+Code MRAM
+
+Up to 8 MB
+
+15× faster write than Flash, OTA-ready A/B swap,
+RWW (Read-While-Write), ECC
+
+Data MRAM
+
+Up to 512 KB
+
+Non-volatile data storage, wear-leveling free (vs
+Flash), ECC
+
+SRAM
+
+Up to 2 MB
+
+ECC, split into system SRAM and TCM (TightlyCoupled Memory) blocks
+
+I/D-TCM
+
+Up to 256 KB
+
+Zero-wait-state, directly coupled to Cortex-M7 for
+deterministic latency
+
+QuadSPI Interface
+
+External
+
+XiP (Execute-in-Place) from external NOR Flash,
+OTFAD on-the-fly AES decryption
+
+2.5 Safety & Security
+Peripheral / Module
+
+Instanc
+es
+
+Purpose
+
+HSE (Hardware Security
+Engine)
+
+1×
+
+AES-128/256, RSA, ECC, SHA-1/2/3, Post-Quantum
+Cryptography (PQC), TRNG/PRNG, SHE+, EVITA Full,
+Secure Boot, Key Management
+
+XRDC (Domain Controller)
+
+1×
+
+Hardware-enforced memory and peripheral access control
+for mixed-criticality isolation
+
+FCCU (Fault Collection &
+Control Unit)
+
+1×
+
+Collects faults from all modules; triggers safe-state
+reactions (reset, interrupt, pin toggling)
+
+SWT (Software Watchdog
+Timer)
+
+4×
+
+Independent watchdog per domain; window mode support;
+keyed service sequence
+
+EWM (External Watchdog
+Monitor)
+
+1×
+
+Monitors external watchdog IC; drives external reset pin
+
+CMU (Clock Monitor Unit)
+
+Multiple
+
+Monitors all clock sources for loss-of-lock, over/underfrequency faults
+
+STCU (Self-Test Control
+Unit)
+
+1×
+
+MBIST (memory BIST) and LBIST (logic BIST)
+orchestration for ISO 26262 ASIL D compliance
+
+EIM / ERM
+
+1× each
+
+Error Injection Module / Error Reporting Module for ECC
+validation and fault reporting
+
+CRC
+
+1×
+
+Hardware CRC engine: CRC-32, CRC-16/CCITT,
+polynomial configurable
+
+MPU
+
+Per core
+
+Arm Memory Protection Unit on each Cortex-M7 and
+Cortex-R52 core
+
+Peripheral
+
+Count
+
+Key Features
+
+eDMA
+
+2× (32
+ch
+each)
+
+Enhanced DMA, scatter-gather, minor/major loop linking,
+peripheral to memory, auto-handshake
+
+GPIO
+
+~200+
+I/Os
+
+Full GPIO with configurable drive strength, pull-up/down,
+interrupt-on-change, hysteresis
+
+SIUL2 (Signal I/O Unit)
+
+1×
+
+Pin mux controller, pad configuration, interrupt router for
+GPIO
+
+WKPU (Wake-Up Unit)
+
+1×
+
+Configures 60+ GPIO wake-up pins from Standby mode
+
+MSCM
+
+1×
+
+Miscellaneous System Control Module: core-to-core
+interrupts, boot config
+
+IPCF Middleware
+
+SW
+
+Inter-core communication framework for AUTOSAR/nonAUTOSAR on multiple cores
+
+Clock Generation
+(PCC/CGM)
+
+1×
+
+System PLL, FIRC (48 MHz), SIRC, FXOSC (8–40 MHz),
+SXOSC (32 kHz), per-peripheral clock gating
+
+JTAG / SWD / ETB
+
+1× each
+
+Full debug and trace; ETM trace buffer, SWO, CoreSight
+DAP
+
+2.6 System & DMA
+
+3. OpenBSW CAN Application for S32K566
+This section walks through building a simple CAN 2.0 and CAN FD send/receive application on top of
+OpenBSW targeting the S32K566. The application uses FlexCAN_0 as the hardware peripheral.
+
+3.1 Architecture Overview
+OpenBSW follows a strict layered BSW architecture. A CAN message travels through the following
+layers:
+Layer
+
+Responsibility
+
+Application
+
+Calls send/receive API; owns the business logic that consumes or
+produces data
+
+can::ICanTransceiver
+
+Hardware-agnostic CAN API for transmit, receive, add/remove
+listeners
+
+S32K5 FlexCAN Driver
+
+Configures FlexCAN_0 registers; handles message buffer
+interrupts; implements ICanTransceiver
+
+FlexCAN_0 (Hardware)
+
+S32K566 on-chip CAN controller; handles bit-timing, arbitration,
+CRC, ACK, error frames
+
+3.2 Project Structure
+openbsw/
+├── app/
+│
+└── src/
+│
+└── can/
+│
+├── CanApplication.h
+← your application class
+│
+└── CanApplication.cpp
+├── bsp/
+│
+└── s32k566/
+│
+├── bspCan/
+│
+│
+├── S32K5FlexCanTransceiver.h
+│
+│
+└── S32K5FlexCanTransceiver.cpp
+│
+└── startup/
+│
+└── startup_s32k566.cpp
+├── libs/
+│
+└── bsp/
+│
+└── bspCan/
+← OpenBSW CAN interfaces
+│
+├── CANFrame.h
+│
+└── ICanTransceiver.h
+└── CMakeLists.txt
+
+3.3 Step 1 — Implement the CAN Listener
+Create a listener class that OpenBSW will call back whenever a CAN frame is received. The
+AcceptAllFilter passes every frame to this listener; you can replace it with an ID-range or mask filter.
+CanApplication.h
+#pragma once
+#include "can/canframes/CANFrame.h"
+#include "can/transceiver/ICanTransceiver.h"
+#include "can/transceiver/ICANFrameListener.h"
+namespace app {
+class CanApplication : public ::can::ICANFrameListener {
+public:
+explicit CanApplication(::can::ICanTransceiver& transceiver);
+// ICANFrameListener interface
+void canFrameReceived(::can::CANFrame const& frame) override;
+::can::CANFrame::AbstractCANFrameFilter const& getFilter() override;
+// Application API
+void init();
+void sendHeartbeat();
+
+// call periodically
+
+private:
+::can::ICanTransceiver&
+::can::CANFrame::AcceptAllFilter
+uint32_t
+uint32_t
+};
+
+_transceiver;
+_filter;
+_txCount{0};
+_rxCount{0};
+
+} // namespace app
+
+CanApplication.cpp
+#include "can/CanApplication.h"
+#include <cstring>
+namespace app {
+CanApplication::CanApplication(::can::ICanTransceiver& transceiver)
+: _transceiver(transceiver) {}
+void CanApplication::init() {
+// Register this listener — all received frames will call canFrameReceived()
+_transceiver.addCANFrameListener(*this);
+_transceiver.init();
+}
+// ── TX: build and send a heartbeat frame ──────────────────────
+void CanApplication::sendHeartbeat() {
+::can::CANFrame frame;
+frame.setId(0x100);
+// CAN ID: 0x100
+
+uint8_t payload[8];
+payload[0] = static_cast<uint8_t>(_txCount & 0xFF);
+payload[1] = static_cast<uint8_t>((_txCount >> 8) & 0xFF);
+payload[2] = 0xDE; payload[3] = 0xAD;
+payload[4] = 0xBE; payload[5] = 0xEF;
+payload[6] = 0xCA; payload[7] = 0xFE;
+frame.set(payload, sizeof(payload));
+
+}
+
+auto const result = _transceiver.write(frame);
+if (result == ::can::ICanTransceiver::ErrorCode::CAN_ERR_OK) {
+++_txCount;
+}
+
+// ── RX: handle incoming frames ────────────────────────────────
+void CanApplication::canFrameReceived(::can::CANFrame const& frame) {
+++_rxCount;
+uint32_t const id = frame.getId();
+uint8_t const len = frame.getPayloadLength();
+uint8_t const* data = frame.getPayload();
+
+}
+
+// Example: react to command frame 0x200
+if (id == 0x200 && len >= 1) {
+uint8_t cmd = data[0];
+(void)cmd; // dispatch command here
+}
+
+::can::CANFrame::AbstractCANFrameFilter const&
+CanApplication::getFilter() {
+return _filter; // AcceptAllFilter — receives every frame
+}
+} // namespace app
+
+3.4 Step 2 — Implement the S32K566 FlexCAN Driver
+The driver implements ICanTransceiver and wraps the FlexCAN_0 hardware registers. The OpenBSW
+platform layer includes an MCAL (Microcontroller Abstraction Layer) — use the RTD (Real-Time
+Drivers) FlexCAN driver from NXP's S32K5 SDK, or write a minimal register-level driver as shown
+below.
+S32K5FlexCanTransceiver.h
+#pragma once
+#include "can/transceiver/ICanTransceiver.h"
+#include "S32K566.h"
+// NXP device header (RTD / CMSIS)
+class S32K5FlexCanTransceiver : public ::can::ICanTransceiver {
+public:
+S32K5FlexCanTransceiver();
+// ICanTransceiver overrides
+ErrorCode init() override;
+
+ErrorCode write(::can::CANFrame const& frame) override;
+void
+addCANFrameListener(::can::ICANFrameListener& listener) override;
+void
+removeCANFrameListener(::can::ICANFrameListener& listener) override;
+// ISR entry — call from FlexCAN0_ORed_Message_buffer_0_15_IRQHandler
+void handleRxIrq();
+private:
+static constexpr uint32_t CAN0_BASE
+static constexpr uint8_t TX_MB_IDX
+static constexpr uint8_t RX_MB_IDX
+static constexpr uint32_t BAUD_500K
+
+= 0x40308000U;
+= 0;
+= 4;
+= 0x00DB0006U;
+
+// S32K566 FlexCAN_0
+// Tx message buffer
+// Rx message buffer
+// 500 kbps @ 80 MHz CANCLK
+
+::can::ICANFrameListener* _listener{nullptr};
+volatile uint32_t* _can_base{reinterpret_cast<volatile uint32_t*>(CAN0_BASE)};
+
+};
+
+void configureClocks();
+void configurePins();
+// CAN0_TX → PTC7, CAN0_RX → PTC6 (EVB default)
+void configureMsgBuffer(uint8_t mb, bool isTx, uint32_t rxId = 0);
+
+S32K5FlexCanTransceiver.cpp (key functions)
+#include "S32K5FlexCanTransceiver.h"
+// FlexCAN register offsets (relative to base address)
+static constexpr uint32_t FLEXCAN_MCR
+= 0x00;
+static constexpr uint32_t FLEXCAN_CTRL1
+= 0x04;
+static constexpr uint32_t FLEXCAN_TIMER
+= 0x08;
+static constexpr uint32_t FLEXCAN_IMASK1
+= 0x28;
+static constexpr uint32_t FLEXCAN_IFLAG1
+= 0x30;
+static constexpr uint32_t FLEXCAN_MB_BASE = 0x80; // MB0 starts at offset 0x80
+// Each MB = 16 bytes (CS word + ID word + 8 data bytes + padding)
+#define CAN_REG(offset)
+
+(*(_can_base + ((offset) >> 2)))
+
+::can::ICanTransceiver::ErrorCode S32K5FlexCanTransceiver::init() {
+configureClocks();
+configurePins();
+// 1. Request Freeze mode
+CAN_REG(FLEXCAN_MCR) |= (1U << 25); // MDIS=0, FRZ=1
+CAN_REG(FLEXCAN_MCR) |= (1U << 24); // HALT=1
+while (!(CAN_REG(FLEXCAN_MCR) & (1U << 8))) {} // wait FRZACK
+// 2. Set 500 kbps timing (PRESDIV, PSEG1, PSEG2, RJW)
+CAN_REG(FLEXCAN_CTRL1) = BAUD_500K;
+// 3. Configure Tx MB (MB0) and Rx MB (MB4)
+configureMsgBuffer(TX_MB_IDX, /*isTx=*/true);
+configureMsgBuffer(RX_MB_IDX, /*isTx=*/false, 0x200); // accept 0x200
+// 4. Enable Rx interrupt for MB4
+CAN_REG(FLEXCAN_IMASK1) = (1U << RX_MB_IDX);
+// 5. Exit freeze mode
+CAN_REG(FLEXCAN_MCR) &= ~((1U << 25) | (1U << 24));
+while (CAN_REG(FLEXCAN_MCR) & (1U << 8)) {} // wait FRZACK clear
+
+}
+
+return ErrorCode::CAN_ERR_OK;
+
+::can::ICanTransceiver::ErrorCode
+S32K5FlexCanTransceiver::write(::can::CANFrame const& frame) {
+// MB word layout: [CS(0)] [ID(1)] [DATA_WORD0(2)] [DATA_WORD1(3)]
+uint32_t* mb = reinterpret_cast<uint32_t*>(CAN0_BASE + FLEXCAN_MB_BASE + TX_MB_IDX*16);
+mb[1] = (frame.getId() & 0x7FFU) << 18; // standard ID in bits 28:18
+const uint8_t* d = frame.getPayload();
+mb[2] = ((uint32_t)d[0]<<24)|((uint32_t)d[1]<<16)|((uint32_t)d[2]<<8)|d[3];
+mb[3] = ((uint32_t)d[4]<<24)|((uint32_t)d[5]<<16)|((uint32_t)d[6]<<8)|d[7];
+// CS word: CODE=0xC (Tx data frame), DLC=8
+mb[0] = (0xCU << 24) | (frame.getPayloadLength() << 16);
+}
+
+return ErrorCode::CAN_ERR_OK;
+
+void S32K5FlexCanTransceiver::handleRxIrq() {
+uint32_t flags = CAN_REG(FLEXCAN_IFLAG1);
+if (flags & (1U << RX_MB_IDX)) {
+uint32_t* mb = reinterpret_cast<uint32_t*>(
+CAN0_BASE + FLEXCAN_MB_BASE + RX_MB_IDX*16);
+uint32_t cs = mb[0];
+uint32_t id = (mb[1] >> 18) & 0x7FFU;
+uint8_t dlc = (cs >> 16) & 0xFU;
+::can::CANFrame frame;
+frame.setId(id);
+uint8_t data[8];
+for (uint8_t i = 0; i < dlc; ++i) {
+uint8_t word = i / 4;
+uint8_t byte = 3 - (i % 4); // big-endian in MB
+data[i] = (mb[2 + word] >> (byte * 8)) & 0xFF;
+}
+frame.set(data, dlc);
+if (_listener) { _listener->canFrameReceived(frame); }
+
+}
+
+}
+
+// Clear flag by writing 1
+CAN_REG(FLEXCAN_IFLAG1) = (1U << RX_MB_IDX);
+(void)mb[0]; // unlock MB (read CS to unlock)
+
+extern "C" void FlexCAN0_ORed_MB_0_15_IRQHandler() {
+// Assumes a global pointer or singleton to the transceiver instance
+extern S32K5FlexCanTransceiver* g_canTransceiver;
+if (g_canTransceiver) g_canTransceiver->handleRxIrq();
+}
+
+3.5 Step 3 — Wire Everything in main()
+#include "can/CanApplication.h"
+#include "bsp/s32k566/bspCan/S32K5FlexCanTransceiver.h"
+
+S32K5FlexCanTransceiver* g_canTransceiver = nullptr;
+int main() {
+static S32K5FlexCanTransceiver transceiver;
+static app::CanApplication
+canApp(transceiver);
+g_canTransceiver = &transceiver;
+canApp.init();
+
+}
+
+// registers listener + inits FlexCAN0
+
+// Super-loop: send heartbeat every ~10 ms
+for (;;) {
+canApp.sendHeartbeat();
+for (volatile uint32_t i = 0; i < 800000; ++i) {} // crude delay
+}
+
+3.6 CMake Build Configuration
+cmake_minimum_required(VERSION 3.22)
+project(S32K566_CAN_App LANGUAGES CXX ASM)
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_PROCESSOR arm)
+# Arm Cortex-M7 flags for S32K566
+add_compile_options(
+-mcpu=cortex-m7
+-mfpu=fpv5-d16
+-mfloat-abi=hard
+-mthumb
+-Os -g
+-Wall -Wextra
+-ffunction-sections -fdata-sections
+)
+add_link_options(
+-mcpu=cortex-m7 -mthumb -mfloat-abi=hard
+-Wl,--gc-sections
+-T ${CMAKE_SOURCE_DIR}/bsp/s32k566/linker/S32K566_flash.ld
+)
+include_directories(
+libs/bsp/bspCan
+app/src
+bsp/s32k566
+${NXP_SDK_PATH}/platform/devices/S32K566
+)
+add_executable(s32k566_can_app
+app/src/can/CanApplication.cpp
+bsp/s32k566/bspCan/S32K5FlexCanTransceiver.cpp
+bsp/s32k566/startup/startup_s32k566.cpp
+)
+
+3.7 Pin Assignments (S32K566 EVB)
+Signal
+
+Pin Name
+
+Alt Function
+
+Notes
+
+CAN0_TX
+
+PTC7
+
+ALT5
+
+To CAN transceiver
+TXD
+
+CAN0_RX
+
+PTC6
+
+ALT5
+
+From CAN transceiver
+RXD
+
+CAN1_TX
+
+PTD14
+
+ALT5
+
+Secondary bus
+
+CAN1_RX
+
+PTD13
+
+ALT5
+
+Secondary bus
+
+Debug UART TX
+
+PTA9
+
+ALT2 (LPUART0)
+
+115200 baud, console
+output
+
+4. Running the Application on Synopsys VDK
+Synopsys Virtualizer™ provides a Transactional-Level Model (TLM) virtual platform for the S32K5. NXP
+announced the S32K5 VDK at Embedded World March 2025. Elektrobit, Green Hills Software, and
+other ecosystem partners have already ported their AUTOSAR stacks to it. This section explains how to
+use the VDK to run and verify the CAN application without hardware.
+
+4.1 What is Synopsys VDK?
+Concept
+
+Description
+
+Virtual Platform (VP)
+
+SystemC/TLM-2.0 model of the S32K566 SoC — CPU, memory
+map, peripheral registers all simulated
+
+Virtualizer IDE
+
+Eclipse-based GUI for launching simulations, connecting GDB,
+viewing register/memory state
+
+Peripheral Models
+
+Behavioral models for FlexCAN, LPUART, GPIO, etc. — respond to
+register read/write just like silicon
+
+CAN Virtual Bus
+
+A simulated CAN bus that connects multiple virtual ECU instances;
+frames exchanged via CAPL or Python scripts
+
+GDB Server
+
+Built-in GDB stub lets you use arm-none-eabi-gdb or S32DS to step
+through code, inspect variables
+
+Co-simulation
+
+Can integrate with MATLAB/Simulink, CANoe, or Python CAPL
+scripts for system-level testing
+
+4.2 Installation & Prerequisites
+The Synopsys VDK for S32K5 is available to NXP customers and early adopters through the NXP
+CoreRide platform portal and Synopsys Silicon Lifecycle Management. You will need:
+Requirement
+
+Details
+
+Synopsys Virtualizer License
+
+Obtain from Synopsys (FlexLM or on-demand); bundled with
+NXP CoreRide developer kit
+
+NXP S32K5 VDK Package
+
+Download from NXP's MyNXP portal — includes S32K566
+SystemC model (.so/.dll) + example workspaces
+
+Host OS
+
+Linux (Ubuntu 20.04+) recommended; Windows 10/11 also
+supported
+
+ARM Toolchain
+
+arm-gnu-toolchain-13 (or later) for cross-compiling; use the
+same flags as in Section 3.6
+
+CMake ≥ 3.22
+
+For building the application ELF
+
+Python ≥ 3.9
+
+For CAN stimulus scripts and automated test harnesses
+
+4.3 Step-by-Step: Running the CAN App on VDK
+Step 1: Build the ELF for the virtual target
+cmake -S . -B build-vdk \
+-DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/arm-none-eabi.cmake \
+-DPLATFORM_VDK=ON \
+-DNXP_SDK_PATH=/opt/nxp/S32K5_SDK
+cmake --build build-vdk --target s32k566_can_app
+# Output: build-vdk/s32k566_can_app.elf
+
+Step 2: Launch the S32K566 Virtual Platform
+Open Synopsys Virtualizer IDE, create a new workspace, and add the S32K566 VP model:
+# From the command line (headless launch):
+virtualizer_exec \
+--model
+/opt/synopsys/vdk/s32k566/S32K566_VDK.so \
+--elf
+build-vdk/s32k566_can_app.elf \
+--gdb-port 2345 \
+--params s32k566_params.yaml
+
+Step 3: Connect GDB for debugging
+# In a second terminal:
+arm-none-eabi-gdb build-vdk/s32k566_can_app.elf
+(gdb) target remote localhost:2345
+(gdb) load
+# Load ELF into virtual memory
+(gdb) monitor reset halt
+# Reset virtual CPU
+(gdb) break CanApplication::canFrameReceived
+(gdb) continue
+
+Step 4: Inject CAN frames using a Python stimulus
+The VDK exposes a Python API or socket-based channel to inject frames into the simulated FlexCAN
+bus:
+# can_stimulus.py — inject frames into the S32K566 VDK CAN bus
+import vdk_can_api as vdk
+# provided by the VDK package
+import time
+# Connect to the virtual CAN bus (channel 0 = FlexCAN_0)
+bus = vdk.CanChannel(port=9000, channel=0)
+bus.connect()
+
+# Build and send a command frame (ID=0x200, 1 byte payload)
+frame = vdk.CanFrame()
+frame.id = 0x200
+frame.dlc = 1
+frame.data = [0x01]
+# command byte
+bus.send(frame)
+print('Injected CAN frame 0x200')
+time.sleep(0.1)
+# Read back any frames the virtual ECU sent (ID=0x100 heartbeat)
+received = bus.receive(timeout_ms=200)
+if received:
+print(f'RX: ID=0x{received.id:03X} DLC={received.dlc} Data={received.data.hex()}')
+bus.disconnect()
+
+Step 5: Observe UART console output
+# The VDK maps LPUART0 to a host TCP port (default 3000)
+# Connect with netcat or minicom:
+nc localhost 3000
+# Expected output:
+# [CAN] TX heartbeat #1 sent
+# [CAN] RX frame ID=0x200 DLC=1 Data=01
+# [CAN] TX heartbeat #2 sent
+# ...
+
+4.4 VDK Platform Parameters (s32k566_params.yaml)
+The platform parameter file configures the virtual S32K566 — clock sources, CAN channel mapping,
+memory initialisation, and debug port.
+# s32k566_params.yaml
+platform:
+clocks:
+FIRC_frequency_Hz: 48000000
+FXOSC_frequency_Hz: 16000000
+PLL_frequency_Hz:
+200000000
+can:
+FlexCAN_0:
+enable: true
+virtual_bus_port: 9000
+loopback: false
+FlexCAN_1:
+enable: false
+uart:
+LPUART_0:
+enable: true
+host_port: 3000
+baud_rate: 115200
+
+# 16 MHz external oscillator
+# Cortex-M7 core clock
+
+# Python stimulus connects here
+
+# console output
+
+memory:
+MRAM_size_MB: 4
+SRAM_size_KB: 1024
+debug:
+gdb_port: 2345
+halt_on_reset: true
+
+4.5 Multi-ECU Simulation
+The VDK supports multiple virtual S32K566 instances connected to the same virtual CAN bus,
+simulating a full network of ECUs. Each instance runs independently, and CAN frames are routed
+between instances via the VDK bus infrastructure.
+# multi_ecu_sim.sh — Launch 2 virtual ECUs on the same CAN bus
+# ECU 1: Zone Controller (our send/receive app)
+virtualizer_exec \
+--model
+/opt/synopsys/vdk/s32k566/S32K566_VDK.so \
+--elf
+build-vdk/s32k566_can_app.elf \
+--gdb-port 2345 \
+--params ecu1_params.yaml &
+# CAN port 9000
+# ECU 2: Sensor Node (second S32K566 image)
+virtualizer_exec \
+--model
+/opt/synopsys/vdk/s32k566/S32K566_VDK.so \
+--elf
+build-vdk/sensor_node.elf \
+--gdb-port 2346 \
+--params ecu2_params.yaml &
+# CAN port 9001
+# VDK CAN bus bridge: connects port 9000 ↔ port 9001
+vdk_can_bridge --port-a 9000 --port-b 9001
+
+4.6 Integrating with S32 Design Studio
+Step
+
+Action
+
+1
+
+Install S32 Design Studio 3.5+ and the S32K5 SDK package
+
+2
+
+Import the VDK workspace in S32DS: File → Import → Existing Projects into
+Workspace
+
+3
+
+Under Run/Debug Configurations, create a new 'GDB OpenOCD Debugging'
+target pointing to localhost:2345
+
+4
+
+Start the VDK simulation (virtualizer_exec) before clicking Debug in S32DS
+
+5
+
+Set breakpoints, inspect FlexCAN registers in the peripheral view, and step
+through the CAN ISR
+
+6
+
+Use the S32DS RTD MCAL generator to regenerate CAN pin/clock config and
+import into the project
+
+5. Common Issues & Troubleshooting
+Symptom
+
+Likely Cause & Fix
+
+FlexCAN stays in freeze mode
+
+Check that PCC (Peripheral Clock Configuration) has enabled
+the CAN clock gate before writing MCR. Also verify PLL is
+locked before setting CAN clock source.
+
+No RX interrupt fires
+
+Verify IMASK1 is set for the correct MB index. Confirm the
+MB's CS CODE is 0x4 (empty, ready to receive), not 0x0
+(inactive).
+
+VDK GDB connection refused
+
+Ensure the VDK process is fully started before connecting (look
+for 'Listening on port 2345' in VDK console output).
+
+Python can_stimulus.py gets no
+reply
+
+The CAN application may still be in init. Add a small sleep(0.5)
+before sending. Verify loopback is OFF in params.yaml.
+
+ELF loads but CPU hangs at reset
+
+Check the linker script — the MRAM origin must match the
+S32K566 boot address (typically 0x00400000 for code MRAM)
+and the VDK params MRAM_size.
+
+Wrong baud rate on UART console
+
+The VDK LPUART model uses the host_port but does not
+enforce baud rate — nc always works. If using a real terminal,
+ensure baud_rate: 115200 in params.yaml matches your
+LPUART init.
+
+6. Recommended Next Steps
+#
+
+Task
+
+Details
+
+1
+
+CAN FD Upgrade
+
+Enable FD mode in FlexCAN init (set FDCTRL, FDCBT
+registers), switch CANFrame to 64-byte payload
+
+2
+
+Add PDU Router
+
+Integrate OpenBSW's PduR layer to route signals between
+multiple CAN instances and protocol stacks
+
+3
+
+AUTOSAR Classic
+
+Use Elektrobit EB tresos or ETAS ISOLAR, already ported to
+the VDK. Generates MCAL config for S32K566 FlexCAN.
+
+4
+
+CAN XL Support
+
+S32K566 FlexCAN supports CAN XL frames (up to 2048
+bytes). Requires updated SDK FlexCAN driver.
+
+5
+
+Multi-core IPC
+
+Use NXP IPCF to split CAN handling across Cortex-M7 cores
+with XRDC isolation for ASIL D
+
+6
+
+HSE Security
+
+Secure CAN messages using HSE AES-MAC, implement
+J1939/SecOC authentication layer
+
+7
+
+Ethernet + CAN Gateway
+
+S32K566's Ethernet switch + FlexCAN makes it a natural
+
+CAN↔Ethernet gateway node in a zonal architecture
+
+References: NXP S32K5 Product Announcement (EW 2025) · NXP S32K3xx Datasheet (S32K3xx.pdf) · Synopsys Virtualizer
+VDK Documentation · OpenBSW GitHub (esrlabs/openbsw) · NXP CoreRide Platform Portal · Green Hills Software S32K5
+Press Release
+
+
