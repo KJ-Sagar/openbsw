@@ -61,6 +61,12 @@ VdkCanTransceiver::~VdkCanTransceiver() {
 ::can::ICanTransceiver::ErrorCode VdkCanTransceiver::init() {
     if (_initialised) { return ErrorCode::CAN_ERR_OK; }
 
+    if (_loopback) {
+        // Runtime loopback mode: no socket or VDK process required.
+        _initialised = true;
+        return ErrorCode::CAN_ERR_OK;
+    }
+
 #ifdef VDK_LOOPBACK
     // No socket needed — loopback mode
     _initialised = true;
@@ -103,6 +109,11 @@ VdkCanTransceiver::~VdkCanTransceiver() {
 VdkCanTransceiver::write(::can::CANFrame const& frame) {
     if (!_initialised) { return ErrorCode::CAN_ERR_NOT_INIT; }
 
+    if (_loopback) {
+        dispatchToListeners(frame);
+        return ErrorCode::CAN_ERR_OK;
+    }
+
     VdkCanWireFrame wf = {};
     wf.id  = frame.getId();
     wf.dlc = frame.getPayloadLength();
@@ -134,6 +145,7 @@ VdkCanTransceiver::write(::can::CANFrame const& frame) {
 // =============================================================================
 void VdkCanTransceiver::poll() {
     if (!_initialised) { return; }
+    if (_loopback) { return; }
 
 #ifdef VDK_LOOPBACK
     // Nothing to poll in pure loopback mode

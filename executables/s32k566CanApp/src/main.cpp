@@ -10,8 +10,15 @@
 // =============================================================================
 
 #include "can/CanApplication.h"
-#include "S32K5FlexCanTransceiver.h"
 #include <cstdint>
+
+#if defined(PLATFORM_VDK) && (PLATFORM_VDK == 1)
+#include "VdkCanTransceiver.h"
+using CanTransceiver = VdkCanTransceiver;
+#else
+#include "S32K5FlexCanTransceiver.h"
+using CanTransceiver = S32K5FlexCanTransceiver;
+#endif
 
 // =============================================================================
 // Crude busy-wait delay
@@ -37,11 +44,13 @@ int main(void) {
     // -------------------------------------------------------------------------
     // Instantiate hardware transceiver and application
     // -------------------------------------------------------------------------
-    static S32K5FlexCanTransceiver transceiver;
-    static app::CanApplication     canApp(transceiver);
+    static CanTransceiver      transceiver;
+    static app::CanApplication canApp(transceiver);
 
-    // Optional: enable loopback for standalone VDK test (no second ECU needed)
-    // transceiver.setLoopback(true);
+    // Enable loopback when requested via CMake option CAN_LOOPBACK=ON.
+#if defined(CAN_LOOPBACK) && (CAN_LOOPBACK == 1)
+    transceiver.setLoopback(true);
+#endif
 
     // Initialise: configures FlexCAN_0, registers listener, enables IRQ
     canApp.init();
@@ -53,6 +62,10 @@ int main(void) {
         delay_ms(10U);
 
         ++s_tick10ms;
+
+#if defined(PLATFORM_VDK) && (PLATFORM_VDK == 1)
+        transceiver.poll();
+#endif
 
         // 10 ms task — sends heartbeat frame (ID 0x100)
         canApp.task10ms();

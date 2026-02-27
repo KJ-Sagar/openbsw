@@ -131,7 +131,7 @@ if (BUILD_EXECUTABLE STREQUAL "referenceApp")
             "${CMAKE_CURRENT_SOURCE_DIR}/platforms/s32k1xx")
     elseif (BUILD_TARGET_PLATFORM STREQUAL "S32K566EVB")
         set(OPENBSW_PLATFORM_DIR
-            "${CMAKE_CURRENT_SOURCE_DIR}/platforms/s32k5xx")
+            "${CMAKE_CURRENT_SOURCE_DIR}/platforms/S32k5xx")
     else ()
         set(OPENBSW_PLATFORM_DIR "${CMAKE_CURRENT_SOURCE_DIR}/platforms/posix")
     endif ()
@@ -154,7 +154,7 @@ if (BUILD_EXECUTABLE STREQUAL "s32k566CanApp")
     set(OPENBSW_APP_DIR
         "${CMAKE_CURRENT_LIST_DIR}/executables/s32k566CanApp")
     set(OPENBSW_PLATFORM_DIR
-        "${CMAKE_CURRENT_SOURCE_DIR}/platforms/s32k5xx")
+        "${CMAKE_CURRENT_SOURCE_DIR}/platforms/S32k5xx")
 
     option(PLATFORM_VDK  "Build for Synopsys VDK virtual platform" OFF)
     option(CAN_LOOPBACK  "Enable FlexCAN loopback for self-test"   OFF)
@@ -247,9 +247,9 @@ if (BUILD_EXECUTABLE STREQUAL "unitTest")
         # -----------------------------------------------------------------------
         # S32K566 platform unit tests
         # -----------------------------------------------------------------------
-        add_subdirectory(platforms/s32k5xx/unitTest EXCLUDE_FROM_ALL)
+        add_subdirectory(platforms/S32k5xx/unitTest EXCLUDE_FROM_ALL)
 
-        add_subdirectory(platforms/s32k5xx/bsp/bspCan/test)
+        add_subdirectory(platforms/S32k5xx/bsp/bspCan/test)
 
     else ()
         message(
@@ -269,32 +269,32 @@ elseif (BUILD_EXECUTABLE STREQUAL "s32k566CanApp")
     # OpenBSW CAN interface headers (CANFrame, ICanTransceiver, ICANFrameListener)
     add_library(openbsw_can INTERFACE)
     target_include_directories(openbsw_can INTERFACE
-        libs/bsp/bspCan/include
+        libs/bsp/bspCAN/include
     )
 
     if (PLATFORM_VDK)
         # VDK build: host GCC, TCP-socket-based CAN transceiver
         add_library(bsp_can
-            platforms/s32k5xx/bsp/bspCan/VdkCanTransceiver.cpp
+            platforms/S32k5xx/bsp/bspCan/VdkCanTransceiver.cpp
         )
         target_include_directories(bsp_can PUBLIC
-            platforms/s32k5xx/bsp/bspCan
-            platforms/s32k5xx/bsp/bspCan/include
+            platforms/S32k5xx/bsp/bspCan
+            platforms/S32k5xx/bsp/bspCan/include
         )
     else ()
         # Hardware build: register-level FlexCAN_0 driver for S32K566
         add_library(bsp_can
-            platforms/s32k5xx/bsp/bspCan/S32K5FlexCanTransceiver.cpp
-            platforms/s32k5xx/startup/startup_s32k566.cpp
-            platforms/s32k5xx/startup/system_s32k566.cpp
+            platforms/S32k5xx/bsp/bspCan/S32K5FlexCanTransceiver.cpp
+            platforms/S32k5xx/startup/startup_s32k566.cpp
+            platforms/S32k5xx/startup/system_s32k566.cpp
         )
         target_include_directories(bsp_can PUBLIC
-            platforms/s32k5xx/bsp/bspCan
-            platforms/s32k5xx/bsp/bspCan/include
-            platforms/s32k5xx/include
+            platforms/S32k5xx/bsp/bspCan
+            platforms/S32k5xx/bsp/bspCan/include
+            platforms/S32k5xx/include
         )
         target_link_options(bsp_can INTERFACE
-            -T ${CMAKE_CURRENT_SOURCE_DIR}/platforms/s32k5xx/linker/S32K566_flash.ld
+            -T ${CMAKE_CURRENT_SOURCE_DIR}/platforms/S32k5xx/linker/S32K566_flash.ld
             -Wl,--gc-sections
             -Wl,-Map=${CMAKE_BINARY_DIR}/s32k566_can_app.map
         )
